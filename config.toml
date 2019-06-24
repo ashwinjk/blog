@@ -2,6 +2,7 @@ baseURL = "https://ashwinkamath.netlify.com"
 languageCode = "en-us"
 title = "Ashwin Kamath"
 theme = "liquorice"
+googleAnalytics = "UA-26789271-2"
 
 [params]
     author = "Ashwin Kamath"
