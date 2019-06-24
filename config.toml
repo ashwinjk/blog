@@ -1,0 +1,7 @@
+baseURL = "https://ashwinkamath.netlify.com"
+languageCode = "en-us"
+title = "Ashwin Kamath"
+theme = "liquorice"
+
+[params]
+    author = "Ashwin Kamath"

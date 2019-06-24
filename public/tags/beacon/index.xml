@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>beacon on Ashwin Kamath</title>
+    <link>https://ashwinkamath.netlify.com/tags/beacon/</link>
+    <description>Recent content in beacon on Ashwin Kamath</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 23 Jun 2019 07:32:07 -0700</lastBuildDate>
+    
+	<atom:link href="https://ashwinkamath.netlify.com/tags/beacon/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Safari 12.1 and caching changes</title>
+      <link>https://ashwinkamath.netlify.com/posts/safari12.1-caching/</link>
+      <pubDate>Sun, 23 Jun 2019 07:32:07 -0700</pubDate>
+      
+      <guid>https://ashwinkamath.netlify.com/posts/safari12.1-caching/</guid>
+      <description>&lt;p&gt;In April this year, our webpage started observing a sudden movement in the convertion rates for one of the page load web beacons (tracking pixel) on mobile. On digging deeper it became apparent that the movement coincided with the release of &lt;a href=&#34;https://webkit.org/blog/8718/new-webkit-features-in-safari-12-1/&#34;&gt;safari version 12.1&lt;/a&gt;. As this new version of safari was gradually rolled out across mobile devices in the first half of April, the number of page load event beacons saw an increase which was unexpected. Troubleshooting this revealed a change in the safari behavior. To understand this more, breaking down the beaconing basics&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

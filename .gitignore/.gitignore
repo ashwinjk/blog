@@ -1,1 +1,4 @@
 .DS_Store
+
+# Hugo default output directory
+/public

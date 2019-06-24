@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns="//www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+    <head>
+        
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+
+        <title>Safari 12.1 and caching changes &middot; Ashwin Kamath</title>
+        <link rel='stylesheet' href='//fonts.googleapis.com/css?family=Open+Sans:400,300,600' type='text/css'>
+        <link rel="stylesheet" href="https://ashwinkamath.netlify.com/libraries/normalize.3.0.1.css" />
+        <link rel="stylesheet" href="https://ashwinkamath.netlify.com/css/liquorice.css" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon-144-precomposed.png" sizes="144x144" />
+        <link rel="alternate" href="" type="application/rss+xml" title="Ashwin Kamath" />
+    </head>
+    <body class="li-body">
+
+<header class="li-page-header">
+    <div class="container">
+        <div class="row">
+            <div class="sixteen columns">
+                <div class="li-brand li-left">
+                <a href="https://ashwinkamath.netlify.com">Ashwin Kamath</a></div>
+                <div class="li-menu li-right">
+                    <span class="li-menu-icon" onclick="javascript:toggle('menu');">&#9776;</span>
+                    <ul id="menu2" class="li-menu-items">
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="sixteen columns">
+                <ul id="menu" class="li-menu-items li-menu-mobile">
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+    <div class="container">
+        <div class="row">
+            <div class="sixteen columns">
+                <article class="li-article">
+                    <header class="li-article-header">
+                        <h1 class="li-article-title">Safari 12.1 and caching changes</h1>
+                        <span class="li-article-taxonomies">
+                            
+
+                            
+                                with tags
+                                
+                                    <a href="https://ashwinkamath.netlify.com/tags/safari">safari</a>
+                                
+                                    <a href="https://ashwinkamath.netlify.com/tags/caching">caching</a>
+                                
+                                    <a href="https://ashwinkamath.netlify.com/tags/beacon">beacon</a>
+                                
+                            
+                        </span>
+                         - 
+                        <time class="li-article-date">Sunday, June 23, 2019</time>
+                    </header>
+                    <section>
+                        <p>In April this year, our webpage started observing a sudden movement in the convertion rates for one of the page load web beacons (tracking pixel) on mobile. On digging deeper it became apparent that the movement coincided with the release of <a href="https://webkit.org/blog/8718/new-webkit-features-in-safari-12-1/">safari version 12.1</a>. As this new version of safari was gradually rolled out across mobile devices in the first half of April, the number of page load event beacons saw an increase which was unexpected. Troubleshooting this revealed a change in the safari behavior. To understand this more, breaking down the beaconing basics</p>
+
+<h2 id="beacon">Beacon</h2>
+
+<p>Beacon requests are typically constructed in Javascript to log tiny amount of data back to the server. This can be done using multiple Javascript techniques such as constructing an image object and setting the source, sending via XHR or using the native <a href="https://developer.mozilla.org/en-US/docs/Web/API/Beacon_API">navigator.sendbeacon</a> interface if available.</p>
+
+<p>The server responds to these requests with a small content (like a 1x1 pixel image) or &ldquo;no content&rdquo; HTTP <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/204">status code 204</a>. These requests are cacheable and the appropriate cache-control headers need to be provided so that browser will always send the request to the server and not serve from cache which would result in data loss to the server. If its a 3rd party server, the response headers however are not controllable.</p>
+
+<p>To workaround the caching issue for the beacon request, the javascript beacon utility added a <a href="https://www.maxcdn.com/one/tutorial/cache-busting/">cache busting</a> parameter to the URL like a timestamp so that the URL will be unique and unavailable in the cache and forces the browser to make the request</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">beaconUrl</span>) {
+    <span style="color:#75715e">// Timestamp for cache busting
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">beaconUrl</span> <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#39;&amp;ts=&#39;</span> <span style="color:#f92672">+</span> (<span style="color:#66d9ef">new</span> Date()).<span style="color:#a6e22e">getTime</span>();
+    <span style="color:#a6e22e">fireBeacon</span>(<span style="color:#a6e22e">beaconUrl</span>);
+}
+
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">fireBeacon</span>(<span style="color:#a6e22e">url</span>) {
+    <span style="color:#66d9ef">if</span> (window.<span style="color:#a6e22e">navigator</span> <span style="color:#f92672">&amp;&amp;</span> (<span style="color:#66d9ef">typeof</span> window.<span style="color:#a6e22e">navigator</span>.<span style="color:#a6e22e">sendBeacon</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#39;function&#39;</span>)) {
+        <span style="color:#a6e22e">navigator</span>.<span style="color:#a6e22e">sendBeacon</span>(<span style="color:#a6e22e">url</span>);
+    } <span style="color:#66d9ef">else</span> {
+        <span style="color:#75715e">// Fallback methods
+</span><span style="color:#75715e"></span>    }
+}
+</code></pre></div>
+
+<h2 id="safari-changes">Safari changes</h2>
+
+<p>It looked like everything was in place to successfully fire the beacon request for a page load event. Analyzing the data showed that the increase in the beacons seemed to be from a change to the back button behavior from safari version 12.1.</p>
+
+<p>So a user would visit the page, click on a link and navigate away and then press back to return to the original page. The back to the original page would serve all cache-able content from the browser cache and then rerun all the javascript on page and trigger the onload. The beacon utility would then append the timestamp and fire a new request.</p>
+
+<h3 id="before-safari-12-1">Before Safari 12.1</h3>
+
+<p>For safari versions 12.0 and earlier, it was found that the back button would incorrectly return the old timestamp value from the original page load for a (<code>(new Date()).getTime();</code>) call and generate a stale beacon URL value, ending up with the beacon served from cache. It appears to be some sort of aggresive Javascript optimization by the browser to cache the function return value on the back button. So the beacons were not accurately counting the page loads in the previous version. This was observed across desktop, tablet and mobile safari and for other methods for generating unique values such as:</p>
+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">(<span style="color:#66d9ef">new</span> Date()).<span style="color:#a6e22e">getTime</span>();
+
+window.<span style="color:#a6e22e">performance</span>.<span style="color:#a6e22e">now</span>();
+
+Math.<span style="color:#a6e22e">random</span>();
+</code></pre></div>
+
+<h3 id="safari-12-1-and-onwards">Safari 12.1 and onwards</h3>
+
+<p>This behavior seems to have now been rectified with version 12.1 and higher and the observed uplift in the beacon count was correct and attributed to the back button page views. Safari is now more inline with other modern browsers generating unique values per call regardless of the page navigation.</p>
+                    </section>
+                </article>
+            </div>
+        </div>
+
+        <div class="row li-author">
+    <div class="sixteen columns">
+        Written by <strong>Ashwin Kamath</strong>
+    </div>
+</div>
+
+
+        <div class="row li-pagination">
+            <div class="eight columns">
+                <div class="li-pagination-previous">
+                    
+                        &nbsp;
+                    
+                </div>
+            </div>
+            <div class="eight columns">
+                <div class="li-pagination-next">
+                    
+                        &nbsp;
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+<footer class="li-page-footer">
+    <div class="container">
+        <div class="row">
+            <div class="sixteen columns">
+                <div class="li-page-footer-legal">
+                    &copy; 2019. All rights reserved. 
+                </div>
+                <div class="li-page-footer-theme">
+                    <span class=""><a href="https://github.com/eliasson/liquorice/">liquorice</a> is a theme for <a href="http://hugo.spf13.com">hugo</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    <script type="text/javascript">
+    <!--
+    function toggle(id) {
+        var e = document.getElementById(id);
+        e.style.display == 'block' ? e.style.display = 'none' : e.style.display = 'block';
+    }
+    
+    </script>
+    
+    </body>
+</html>
+
